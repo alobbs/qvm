@@ -61,8 +61,8 @@ def download_latest_image():
 def get_latest_cached_image():
     cache = util.get_image_cache_dir()
     files = [f for f in os.listdir(cache) if 'Fedora-x86_64' in f]
-	if not files:
-		return
+    if not files:
+        return
     files.sort(reverse=True)
     return os.path.join (cache, files[0])
 
