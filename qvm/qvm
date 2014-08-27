@@ -1,0 +1,15 @@
+#!/usr/bin/env python
+
+import os
+import sys
+import init
+
+def main():
+    init.init()
+
+    del(sys.argv[0])
+    filename = os.path.join(os.path.dirname(__file__), "qvm-%s.py"%(sys.argv[0]))
+    execfile(filename)
+
+if __name__ == "__main__":
+    main()
