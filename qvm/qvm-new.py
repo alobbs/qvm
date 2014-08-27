@@ -30,6 +30,11 @@ if args.refresh_img:
     fedora.download_latest_image()
 
 orig_img = fedora.get_latest_cached_image()
+if not orig_img:
+	# On first run there is no img
+    fedora.download_latest_image()
+	orig_img = fedora.get_latest_cached_image()
+
 cmd.run ("cp %s %s"%(orig_img, vm_disk))
 
 # Cloud-init
