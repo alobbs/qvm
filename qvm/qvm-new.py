@@ -7,12 +7,12 @@ import argparse
 
 # Parse parameters
 parser = argparse.ArgumentParser(description='New VM')
-parser.add_argument('name',   action='store', help="VM name")
-parser.add_argument('--os',   action='store', default="fedora", help="[fedora]")
-parser.add_argument('--mem',  action='store', default="1024",   help="Mb of memory")
-parser.add_argument('--cpus', action='store', default="2",      help="Number of CPUs")
-parser.add_argument('--disk', action='store', default="10G",    help="Size of the image")
-parser.add_argument('--refresh-img', action='store_true', default=False, help="Refresh base image")
+parser.add_argument('name',   action='store', help="Virtual Machine's name")
+parser.add_argument('--os',   action='store', default="fedora", help="OS for the VM. Options: [fedora] (Default: fedora)")
+parser.add_argument('--mem',  action='store', default="1024",   help="Mb of memory (Default: 1024)")
+parser.add_argument('--cpus', action='store', default="2",      help="Number of CPUs (Default: 2)")
+parser.add_argument('--disk', action='store', default="10G",    help="Size of the image (Default: 10G)")
+parser.add_argument('--refresh-img', action='store_true', default=False, help="Try to download a newer base image from the Internet")
 args = parser.parse_args()
 
 vm_dir = util.get_vm_install_dir(args.name)
