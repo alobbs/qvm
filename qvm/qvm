@@ -4,8 +4,20 @@ import os
 import sys
 import init
 
+def print_help():
+    print "Usage:"
+    print "  qvm list         - List VMs"
+    print "  qvm rm <NAME>    - Removes VM"
+    print "  qvm new <NAME>   - Creates new VM. --help for parameters"
+    print "  qvm ssh <NAME>   - ssh into the VM"
+    print
+
 def main():
     init.init()
+
+    if sys.argv[1] in ('help', '-help', '--help'):
+        print_help()
+        raise SystemExit
 
     del(sys.argv[0])
     filename = os.path.join(os.path.dirname(__file__), "qvm-%s.py"%(sys.argv[0]))
