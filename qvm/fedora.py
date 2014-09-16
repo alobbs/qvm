@@ -12,7 +12,7 @@ password: fedora
 chpasswd: {expire: False}
 ssh_pwauth: True
 ssh_authorized_keys:
-  - ssh-rsa %(ssh_key)s
+  - %(ssh_key)s
 runcmd:
   - [ yum, -y, remove, cloud-init ]
   - [ poweroff ]
