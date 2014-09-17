@@ -7,36 +7,29 @@ import network
 
 # User cache
 user = None
-host = sys.argv[1]
+vm_name = sys.argv[1]
 
-if '@' in host:
-    user, host = host.split('@')
-
-if not os.path.exists(ssh.USER_CACHE_FILE):
-    pickle.dump ({}, open(ssh.USER_CACHE_FILE,'w+'))
-
-user_cache = pickle.load(open(ssh.USER_CACHE_FILE,'r'))
-if user:
-    user_cache[host] = user
-elif host in user_cache:
-    user = user_cache[host]
-    print "[INFO] Using %s from cache"%(user)
+if len(sys.argv) > 2:
+    remote_cmd = ' '.join(sys.argv[2:])
 else:
-    user = None
+    remote_cmd = None
 
-pickle.dump (user_cache, open(ssh.USER_CACHE_FILE,'w+'))
+# Get username for the session
+user, vm_name = ssh.get_username(vm_name)
 
 # Get IP
-ip = network.get_ip(host)
+ip = network.get_ip(vm_name)
 if not ip:
-    print "ERROR: Could not get the IP of %s"%(host)
+    print "ERROR: Could not get the IP of %s"%(vm_name)
     raise SystemExit
 
 # SSH command line
-command = 'ssh -o "UserKnownHostsFile /dev/null" -o "StrictHostKeyChecking=no" '
-if user:
-    command += "%s@"%(user)
-command += ip
+command = ssh.build_ssh_command(ip, user)
+if remote_cmd:
+    command += ' %s'%(remote_cmd)
 
 # Execute
-cmd.run(command)
+if not sys.stdin.isatty():
+    cmd.run_command(command, stdin=sys.stdin.read())
+else:
+    cmd.run(command)
