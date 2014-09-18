@@ -47,12 +47,14 @@ def build_hostname (ip, user=None):
         return '%s@%s'%(user,ip)
     return host
 
-def build_ssh_command (ip, user=None, binary="ssh"):
+def build_ssh_command (ip, user=None, binary="ssh", terminal=False):
     command = 'ssh %s '%(SSH_CLI_PARAMS)
+    if terminal:
+        command += '-tt '
     command += build_hostname (ip, user)
     return command
 
-def execute_file_over_ssh (vm_name, fullpath):
+def execute_file_over_ssh (vm_name, fullpath, prog_args=None):
     user, host = get_username(vm_name)
 
     ip = network.get_ip(vm_name)
@@ -65,8 +67,10 @@ def execute_file_over_ssh (vm_name, fullpath):
     cmd.run(command)
 
     # Execute
-    command = build_ssh_command(ip, user)
+    command = build_ssh_command(ip, user, terminal=True)
     command += " /tmp/%s" %(os.path.basename(fullpath))
+    if prog_args:
+        command += ' %s'%(prog_args)
     cmd.run(command)
 
     # Clean up

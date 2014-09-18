@@ -9,7 +9,7 @@ import argparse
 parser = argparse.ArgumentParser(description='New VM')
 parser.add_argument('name',   action='store', help="Virtual Machine's name")
 parser.add_argument('--os',   action='store', default="fedora", help="OS for the VM. Options: [fedora] (Default: fedora)")
-parser.add_argument('--mem',  action='store', default="1024",   help="Mb of memory (Default: 1024)")
+parser.add_argument('--mem',  action='store', default="2048",   help="Mb of memory (Default: 2048)")
 parser.add_argument('--cpus', action='store', default="2",      help="Number of CPUs (Default: 2)")
 parser.add_argument('--disk', action='store', default="10G",    help="Size of the image (Default: 10G)")
 parser.add_argument('--refresh-img', action='store_true', default=False, help="Try to download a newer base image from the Internet")
@@ -69,6 +69,9 @@ cmd.run ("virt-install --import --os-type=linux --nographics" + \
 
 cmd.run("virsh change-media %s hda --eject --config" %(args.name))
 cmd.run("rm %s %s %s"%(vm_ci_iso, user_data_fp, meta_data_fp))
+
+# SSH set-up
+cmd.run("virt-edit -d %s /etc/sudoers -e 's/^.*requiretty$/Defaults !requiretty/'"%(args.name))
 
 # Resize
 cmd.run("virt-filesystems --long -h --all -a %s" %(vm_disk))
