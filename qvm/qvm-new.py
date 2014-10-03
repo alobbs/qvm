@@ -82,13 +82,12 @@ g.shutdown ()
 g.close ()
 
 # Resize
-cmd.run("virt-filesystems --long -h --all -a %s" %(vm_disk))
 cmd.run("qemu-img create -f qcow2 -o preallocation=metadata %s.new %s"%(vm_disk, args.disk))
 cmd.run("virt-resize --quiet --expand /dev/sda1 %s %s.new"%(vm_disk, vm_disk))
 cmd.run("mv %s.new %s"%(vm_disk, vm_disk))
 
 # Start VM
-cmd.run ("virsh start %s"%(args.name))
+cmd.run ("qvm start %s"%(args.name))
 
 # Post install
 os_script.cb_post_install(args.name)
