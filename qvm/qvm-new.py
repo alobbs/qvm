@@ -28,11 +28,8 @@ else:
     cli.FATAL_ERROR ("Unsupported OS: '%s'"%(args.os))
 
 # Clean up
-cmd.run ("rm -rf '%s'"%(vm_dir))
+cmd.run ("qvm rm %s"%(args.name))
 cmd.run ("mkdir -p '%s'"%(vm_dir))
-
-cmd.run ("virsh destroy %s"%(args.name))
-cmd.run ("virsh undefine %s"%(args.name))
 
 # Initial image
 if args.refresh_img:
