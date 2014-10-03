@@ -1,16 +1,15 @@
 import os
-import sys
 import ssh
-import cmd
-import pickle
-import network
+import argparse
 
-vm_name = sys.argv[1]
-recipe  = sys.argv[2]
-vargs   = sys.argv[3:]
+# Parse known parameters
+parser = argparse.ArgumentParser(description='Run recipe')
+parser.add_argument('name',   action='store', help="Virtual Machine's name")
+parser.add_argument('recipe', action='store', help="Recipe name")
+args,vargs = parser.parse_known_args()
 
 # Recipe
-recipe_fp = os.path.join (os.path.dirname(__file__), "recipes", "%s.py"%(recipe))
+recipe_fp = os.path.join (os.path.dirname(__file__), "recipes", "%s.py"%(args.recipe))
 
 # Execute recipe
-ssh.execute_file_over_ssh(vm_name, recipe_fp, ' '.join(vargs))
+ssh.execute_file_over_ssh(args.name, recipe_fp, ' '.join(vargs))
