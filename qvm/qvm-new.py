@@ -3,6 +3,7 @@ import cmd
 import cli
 import util
 import fedora
+import guestfs
 import argparse
 
 # Parse parameters
@@ -68,7 +69,17 @@ cmd.run("virsh change-media %s hda --eject --config" %(args.name))
 cmd.run("rm %s %s %s"%(vm_ci_iso, user_data_fp, meta_data_fp))
 
 # SSH set-up
-cmd.run("virt-edit -d %s /etc/sudoers -e 's/^.*requiretty$/Defaults !requiretty/'"%(args.name))
+g = guestfs.GuestFS (python_return_dict=True)
+g.add_drive_opts (vm_disk, readonly=False)
+g.launch()
+g.mount (g.inspect_os()[0], "/")
+
+s = g.cat('/etc/sudoers')
+s = s.replace(" requiretty", " !requiretty")
+g.write_file('/etc/sudoers', s, 0)
+
+g.shutdown ()
+g.close ()
 
 # Resize
 cmd.run("virt-filesystems --long -h --all -a %s" %(vm_disk))
