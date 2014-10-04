@@ -69,6 +69,8 @@ cmd.run("virsh change-media %s hda --eject --config" %(args.name))
 cmd.run("rm %s %s %s"%(vm_ci_iso, user_data_fp, meta_data_fp))
 
 # SSH set-up
+print "[INFO] Fixing /etc/sudoers"
+
 g = guestfs.GuestFS (python_return_dict=True)
 g.add_drive_opts (vm_disk, readonly=False)
 g.launch()
@@ -78,16 +80,14 @@ s = g.cat('/etc/sudoers')
 s = s.replace(" requiretty", " !requiretty")
 g.write_file('/etc/sudoers', s, 0)
 
-g.shutdown ()
+g.sync()
+g.umount_all()
 g.close ()
 
 # Resize
 cmd.run("qemu-img create -f qcow2 -o preallocation=metadata %s.new %s"%(vm_disk, args.disk))
 cmd.run("virt-resize --quiet --expand /dev/sda1 %s %s.new"%(vm_disk, vm_disk))
 cmd.run("mv %s.new %s"%(vm_disk, vm_disk))
-
-# Start VM
-cmd.run ("qvm start %s"%(args.name))
 
 # Post install
 os_script.cb_post_install(args.name)
