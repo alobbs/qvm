@@ -16,6 +16,11 @@ def get_image_cache_dir():
 def get_vm_install_dir(name):
     return os.path.join (get_basedir(), 'VMs', name)
 
+def close_guestfs_vm_handler(g):
+	g.sync()
+	g.umount_all()
+	g.close()
+
 def get_guestfs_vm_handler(name):
 	import guestfs
 
@@ -40,7 +45,6 @@ def get_guestfs_vm_handler(name):
 		print "  Distro:       %s" % (g.inspect_get_distro (root))
 
 		mps = g.inspect_get_mountpoints(root)
-		print "mps", mps
 		for mp_dev_target in mps:
 			print "[INFO] mount", mps[mp_dev_target], mp_dev_target
 			g.mount(mps[mp_dev_target], mp_dev_target)
