@@ -53,7 +53,7 @@ def wait_net_service(server, port, timeout=None):
         except socket.error, err:
             # catch timeout exception from underlying network library
             # this one is different from socket.timeout
-            if type(err.args) != tuple or err[0] not in (errno.ETIMEDOUT, 113):
+            if type(err.args) != tuple or err[0] not in (errno.ETIMEDOUT, 111, 113):
                 raise
         else:
             s.recv(1)

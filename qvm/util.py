@@ -46,3 +46,8 @@ def get_guestfs_vm_handler(name):
 			g.mount(mps[mp_dev_target], mp_dev_target)
 
 	return g
+
+def vm_is_running (vmname):
+	cont = os.popen("virsh list --state-running --name").read()
+	running_vms = [n.strip() for n in cont.split('\n') if n]
+	return vmname in running_vms

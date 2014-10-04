@@ -17,6 +17,9 @@ args,vargs = parser.parse_known_args()
 # Recipe
 recipe_dir = os.path.join (os.path.dirname(__file__), "recipes")
 
+# Make sure the VM is shut down
+cmd.run("qvm stop %s"%(args.name))
+
 # Copy recipes
 g = util.get_guestfs_vm_handler (args.name)
 g.mkdir_p (REMOTE_TMP)
@@ -29,11 +32,10 @@ for filename in os.listdir(recipe_dir):
 		g.upload (fp_local, fp_vm)
 		g.chmod (stat.S_IMODE(os.stat(fp_local).st_mode), fp_vm)
 
-g.sync()
-g.umount_all()
-g.close()
+util.close_guestfs_vm_handler(g)
 
 # Execute recipe
 cmd.run("qvm start %s"%(args.name))
 network.wait_vm_net_service (args.name, 22)
 ssh.run (args.name, os.path.join(REMOTE_TMP, '%s.py'%(args.recipe)), ' '.join(vargs))
+cmd.run("qvm stop %s"%(args.name))
