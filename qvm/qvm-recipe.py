@@ -1,6 +1,12 @@
 import os
+import cmd
 import ssh
+import util
+import stat
+import network
 import argparse
+
+REMOTE_TMP = "/var/tmp/recipes"
 
 # Parse known parameters
 parser = argparse.ArgumentParser(description='Run recipe')
@@ -9,7 +15,25 @@ parser.add_argument('recipe', action='store', help="Recipe name")
 args,vargs = parser.parse_known_args()
 
 # Recipe
-recipe_fp = os.path.join (os.path.dirname(__file__), "recipes", "%s.py"%(args.recipe))
+recipe_dir = os.path.join (os.path.dirname(__file__), "recipes")
+
+# Copy recipes
+g = util.get_guestfs_vm_handler (args.name)
+g.mkdir_p (REMOTE_TMP)
+
+for filename in os.listdir(recipe_dir):
+	if filename.endswith(".py"):
+		fp_local = os.path.join (recipe_dir, filename)
+		fp_vm    = os.path.join (REMOTE_TMP, filename)
+		print "+ cp %s %s:%s" % (fp_local, args.name, fp_vm)
+		g.upload (fp_local, fp_vm)
+		g.chmod (stat.S_IMODE(os.stat(fp_local).st_mode), fp_vm)
+
+g.sync()
+g.umount_all()
+g.close()
 
 # Execute recipe
-ssh.execute_file_over_ssh(args.name, recipe_fp, ' '.join(vargs))
+cmd.run("qvm start %s"%(args.name))
+network.wait_vm_net_service (args.name, 22)
+ssh.run (args.name, os.path.join(REMOTE_TMP, '%s.py'%(args.recipe)), ' '.join(vargs))
