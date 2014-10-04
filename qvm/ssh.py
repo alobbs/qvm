@@ -77,3 +77,15 @@ def execute_file_over_ssh (vm_name, fullpath, prog_args=None):
     command = build_ssh_command(ip, user)
     command += " rm -fv /tmp/%s" %(os.path.basename(fullpath))
     cmd.run(command)
+
+def run (vm_name, run_cmd, args=None):
+	user, host = get_username(vm_name)
+
+	ip = network.get_ip(vm_name)
+	if not ip:
+		print "ERROR: Could not get the IP of %s"%(vm_name)
+		raise SystemExit
+
+	command = build_ssh_command (ip, user, terminal=True)
+	command += " %s"%(run_cmd)
+	return cmd.run(command)
