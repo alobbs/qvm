@@ -2,7 +2,8 @@ import os
 import sys
 import ssh
 import cmd
-import pickle
+import util
+import time
 import network
 
 # User cache
@@ -27,6 +28,11 @@ if not ip:
 command = ssh.build_ssh_command(ip, user)
 if remote_cmd:
     command += ' %s'%(remote_cmd)
+
+# Start the VM if it isn't running
+if not util.vm_is_running(vm_name):
+	cmd.run("qvm start %s"%(vm_name))
+	network.wait_vm_net_service (vm_name, 22)
 
 # Execute
 if not sys.stdin.isatty():
