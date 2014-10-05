@@ -32,7 +32,9 @@ if remote_cmd:
 # Start the VM if it isn't running
 if not util.vm_is_running(vm_name):
 	cmd.run("qvm start %s"%(vm_name))
-	network.wait_vm_net_service (vm_name, 22)
+
+# Make sure the SSH service is ready
+network.wait_vm_net_service (vm_name, 22)
 
 # Execute
 if not sys.stdin.isatty():
