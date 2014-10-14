@@ -10,6 +10,11 @@ import network
 user = None
 vm_name = sys.argv[1]
 
+# Start the VM if it isn't running
+if not util.vm_is_running(vm_name):
+	cmd.run("qvm start %s"%(vm_name))
+
+# Command
 if len(sys.argv) > 2:
     remote_cmd = ' '.join(sys.argv[2:])
 else:
@@ -28,10 +33,6 @@ if not ip:
 command = ssh.build_ssh_command(ip, user)
 if remote_cmd:
     command += ' %s'%(remote_cmd)
-
-# Start the VM if it isn't running
-if not util.vm_is_running(vm_name):
-	cmd.run("qvm start %s"%(vm_name))
 
 # Make sure the SSH service is ready
 network.wait_vm_net_service (vm_name, 22)

@@ -1,4 +1,6 @@
-import os, re
+import os
+import re
+import time
 
 def get_ip(vm_name):
     # Read VM info
@@ -62,5 +64,10 @@ def wait_net_service(server, port, timeout=None):
             return True
 
 def wait_vm_net_service(vmname, port, timeout=None):
-	ip = get_ip(vmname)
+	while True:
+		ip = get_ip(vmname)
+		if ip:
+			break
+		time.sleep(1)
+
 	return wait_net_service (ip, port, timeout)
