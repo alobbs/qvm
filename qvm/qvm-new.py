@@ -2,14 +2,16 @@ import os
 import cmd
 import cli
 import util
-import fedora
 import guestfs
 import argparse
+
+import fedora
+import centos
 
 # Parse parameters
 parser = argparse.ArgumentParser(description='New VM')
 parser.add_argument('name',   action='store', help="Virtual Machine's name")
-parser.add_argument('--os',   action='store', default="fedora", help="OS for the VM. Options: [fedora] (Default: fedora)")
+parser.add_argument('--os',   action='store', default="fedora", help="OS for the VM. Options: [fedora,centos] (Default: fedora)")
 parser.add_argument('--mem',  action='store', default="2048",   help="Mb of memory (Default: 2048)")
 parser.add_argument('--cpus', action='store', default="2",      help="Number of CPUs (Default: 2)")
 parser.add_argument('--disk', action='store', default="10G",    help="Size of the image (Default: 10G)")
